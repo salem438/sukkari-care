@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سُكّري كير - متابعة السكري والتثقيف الصحي</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0d9488',
+                        secondary: '#0f766e',
+                        accent: '#f43f5e'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
+        @keyframes pulseSlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        .animate-pulse-slow {
+            animation: pulseSlow 2.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 min-h-screen pb-24 transition-colors duration-200" id="appBody">
+
+    <!-- SPLASH SCREEN / الشاشة الترحيبية -->
+    <div id="splashScreen" class="fixed inset-0 z-[100] bg-gradient-to-br from-teal-700 via-teal-800 to-teal-950 text-white flex flex-col items-center justify-between p-6 text-center transition-all duration-500">
+        <!-- Top Badge -->
+        <div class="w-full max-w-md flex justify-between items-center pt-2">
+            <span class="bg-white/10 backdrop-blur-md text-teal-100 text-xs px-3 py-1 rounded-full font-semibold border border-white/10">
+                <i class="fa-solid fa-graduation-cap ml-1"></i> مشروع تخرج متكامل
+            </span>
+            <span class="text-xs text-teal-200 font-mono">v3.0 Cloud Live</span>
+        </div>
+
+        <!-- Center Content -->
+        <div class="max-w-sm space-y-5 my-auto">
+            <!-- Animated Logo -->
+            <div class="relative mx-auto w-24 h-24">
+                <div class="absolute inset-0 bg-teal-400 rounded-3xl blur-xl opacity-30 animate-pulse"></div>
+                <div class="relative w-24 h-24 rounded-3xl bg-white text-teal-700 flex items-center justify-center text-5xl shadow-2xl animate-pulse-slow">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+            </div>
+
+            <!-- Title & Description -->
+            <div class="space-y-2">
+                <h1 class="text-3xl font-black tracking-tight">سُكّري كير</h1>
+                <p class="text-teal-200 font-bold text-sm">رفيقك الذكي لمتابعة السكري والتثقيف الصحي</p>
+                <p class="text-xs text-teal-100/80 leading-relaxed pt-1">
+                    نظام سحابي متكامل يربط المريض بالطبيب في الوقت الفعلي، ويوفر تتبعاً دقيقاً لقراءات السكر، الوجبات، الأدوية، والتدخل السريع في حالات الطوارئ.
+                </p>
+            </div>
+
+            <!-- Quick Feature Pills -->
+            <div class="grid grid-cols-3 gap-2 pt-2 text-[11px] font-semibold">
+                <div class="bg-white/10 backdrop-blur-sm p-2.5 rounded-2xl border border-white/10 flex flex-col items-center space-y-1">
+                    <i class="fa-solid fa-cloud-arrow-up text-teal-300 text-base"></i>
+                    <span>مزامنة لحظية</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm p-2.5 rounded-2xl border border-white/10 flex flex-col items-center space-y-1">
+                    <i class="fa-solid fa-user-doctor text-teal-300 text-base"></i>
+                    <span>لوحة للطبيب</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm p-2.5 rounded-2xl border border-white/10 flex flex-col items-center space-y-1">
+                    <i class="fa-solid fa-file-pdf text-teal-300 text-base"></i>
+                    <span>تقارير PDF</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Action & Auto-Timer -->
+        <div class="w-full max-w-sm space-y-3 pb-4">
+            <button type="button" onclick="dismissSplash()" class="w-full bg-white text-teal-900 hover:bg-teal-50 font-black text-sm py-3.5 rounded-2xl shadow-xl transition transform active:scale-95 flex items-center justify-center space-x-2 space-x-reverse cursor-pointer">
+                <span>ابدأ المتابعة الآن</span>
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <div class="w-full bg-teal-950/60 h-1.5 rounded-full overflow-hidden">
+                <div id="splashProgress" class="bg-teal-300 h-full w-0 transition-all duration-[2500ms] ease-linear"></div>
+            </div>
+            <p class="text-[10px] text-teal-200/70">سيتم الدخول تلقائياً خلال لحظات...</p>
+        </div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div onclick="showSplashAgain()" title="عرض الشاشة الترحيبية" class="cursor-pointer w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-lg shadow-md hover:bg-teal-700 transition">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2 space-x-reverse">
+                        <h1 class="font-bold text-lg leading-tight">سُكّري كير</h1>
+                        <span id="cloudStatusBadge" class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
+                            جاري الاتصال...
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400" id="headerSubTitle">أهلاً، أ. محمود أحمد</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <!-- SOS Button Fixed -->
+                <button onclick="openSosModal()" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 space-x-reverse shadow-md animate-pulse cursor-pointer">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>SOS</span>
+                </button>
+                <!-- Settings Button -->
+                <button onclick="openSettingsModal()" class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition cursor-pointer">
+                    <i class="fa-solid fa-user-cog"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Secondary Toolbar: Font Size & Dark Mode & PDF -->
+        <div class="bg-gray-100 dark:bg-gray-800/50 px-4 py-2 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between text-xs">
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <span class="text-gray-500 dark:text-gray-400">حجم الخط:</span>
+                <button onclick="changeFontSize('sm')" class="px-2 py-1 bg-white dark:bg-gray-700 rounded shadow-sm font-bold cursor-pointer">-A</button>
+                <button onclick="changeFontSize('lg')" class="px-2 py-1 bg-white dark:bg-gray-700 rounded shadow-sm font-bold cursor-pointer">+A</button>
+            </div>
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <button onclick="toggleDarkMode()" class="text-gray-600 dark:text-gray-300 hover:text-teal-600 flex items-center space-x-1 space-x-reverse cursor-pointer">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:inline text-amber-400"></i>
+                    <span class="hidden sm:inline">الوضع الليلي</span>
+                </button>
+                <button onclick="generatePdfReport()" class="text-teal-600 dark:text-teal-400 font-bold hover:underline flex items-center space-x-1 space-x-reverse cursor-pointer">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>تقرير PDF للعيادة</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto px-4 py-4 space-y-5" id="mainContainer">
+
+        <!-- PWA Install Banner -->
+        <div id="pwaBanner" class="bg-gradient-to-r from-teal-600 to-emerald-600 text-white p-3.5 rounded-2xl shadow-md flex items-center justify-between">
+            <div>
+                <h3 class="font-bold text-sm">ثبّت سُكّري كير على شاشتك الرئيسية</h3>
+                <p class="text-xs text-teal-100 mt-0.5">ليعمل كتطبيق موبايل متزامن على جميع الأجهزة!</p>
+            </div>
+            <button onclick="installPwa()" class="bg-white text-teal-800 font-bold text-xs px-3.5 py-2 rounded-xl shadow hover:bg-teal-50 transition cursor-pointer">تثبيت</button>
+        </div>
+
+        <!-- Gamification & Streak Badge -->
+        <div class="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-2xl shadow-sm flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center text-xl font-black">
+                    🔥
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm" id="streakTitle">أنت منتظم بقالك 5 أيام متتالية!</h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">سجل قياساتك اليوم لتكسب شارة "بطل السيطرة"</p>
+                </div>
+            </div>
+            <span class="bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 font-extrabold text-sm px-3 py-1 rounded-xl">5 أيام</span>
+        </div>
+
+        <!-- Tabs Navigation Content Wrapper -->
+        <div id="tabContents">
+
+            <!-- TAB 1: HOME / الرئيسية -->
+            <div id="content-home" class="space-y-4 tab-content">
+                <!-- Quick Actions Grid -->
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="switchTab('sugar')" class="bg-teal-700 hover:bg-teal-800 text-white p-3 rounded-2xl text-center shadow-md flex flex-col items-center justify-center space-y-1.5 transition cursor-pointer">
+                        <i class="fa-solid fa-droplet text-lg"></i>
+                        <span class="font-bold text-xs">سجّل السكر الآن</span>
+                    </button>
+                    <button onclick="switchTab('meals')" class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 p-3 rounded-2xl text-center shadow-sm flex flex-col items-center justify-center space-y-1.5 transition cursor-pointer">
+                        <i class="fa-solid fa-utensils text-teal-600 text-lg"></i>
+                        <span class="font-bold text-xs text-gray-700 dark:text-gray-200">سجّل وجبة وأكل</span>
+                    </button>
+                    <button onclick="switchTab('doctor')" class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 p-3 rounded-2xl text-center shadow-sm flex flex-col items-center justify-center space-y-1.5 transition cursor-pointer">
+                        <i class="fa-solid fa-user-doctor text-teal-600 text-lg"></i>
+                        <span class="font-bold text-xs text-gray-700 dark:text-gray-200">استشارة للطبيب</span>
+                    </button>
+                </div>
+
+                <!-- Featured Education Card -->
+                <div class="bg-gradient-to-br from-teal-800 to-teal-950 text-white p-5 rounded-3xl shadow-lg relative overflow-hidden">
+                    <div class="absolute -left-4 -bottom-4 opacity-10 text-8xl">
+                        <i class="fa-solid fa-book-medical"></i>
+                    </div>
+                    <span class="bg-teal-700/80 text-teal-200 text-xs px-2.5 py-1 rounded-lg font-semibold">التثقيف الصحي الأهم في السكر</span>
+                    <h3 class="font-bold text-lg mt-2 leading-snug">دليلك لفهم تأثير الأكل على السكر وحساب الكربوهيدرات</h3>
+                    <p class="text-xs text-teal-100 mt-1 opacity-90">اعرف إزاي تختار وجباتك بذكاء وتمنع الارتفاعات المفاجئة بعد الأكل بساعتين.</p>
+                    <button onclick="switchTab('education')" class="mt-4 bg-white text-teal-900 text-xs font-bold px-4 py-2 rounded-xl shadow hover:bg-teal-50 transition cursor-pointer">اقرأ الدليل الآن</button>
+                </div>
+
+                <!-- Latest Readings Preview -->
+                <div class="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-2xl shadow-sm space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-sm flex items-center space-x-2 space-x-reverse">
+                            <i class="fa-solid fa-chart-line text-teal-600"></i>
+                            <span>آخر القراءات المسجلة (مباشر)</span>
+                        </h4>
+                        <button onclick="switchTab('sugar')" class="text-xs text-teal-600 font-bold hover:underline cursor-pointer">عرض الكل</button>
+                    </div>
+                    <div id="latestReadingsList" class="space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- PROFESSIONAL FOOTER / قسم الفوتر الاحترافي -->
+                <footer class="bg-gray-900 text-gray-300 rounded-3xl p-5 space-y-4 shadow-lg border border-gray-800 text-xs mt-8">
+                    <div class="flex items-center space-x-3 space-x-reverse border-b border-gray-800 pb-3">
+                        <div class="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-base shadow">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">سُكّري كير (Sukkari Care)</h4>
+                            <p class="text-[10px] text-gray-400">مشروع تخرج تخصصي لإدارة ومتابعة مرضى السكري.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div>
+                            <h5 class="font-bold text-white text-[11px] mb-1.5">روابط سريعة</h5>
+                            <ul class="space-y-1 text-gray-400">
+                                <li><a href="#" onclick="switchTab('sugar'); return false;" class="hover:text-teal-400 transition">تسجيل السكر</a></li>
+                                <li><a href="#" onclick="switchTab('meals'); return false;" class="hover:text-teal-400 transition">حاسبة الوجبات</a></li>
+                                <li><a href="#" onclick="switchTab('education'); return false;" class="hover:text-teal-400 transition">التثقيف الصحي</a></li>
+                                <li><a href="#" onclick="switchTab('doctor'); return false;" class="hover:text-teal-400 transition">لوحة العيادة</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-white text-[11px] mb-1.5">بيانات التواصل والعيادة</h5>
+                            <p class="text-gray-400 flex items-center space-x-1.5 space-x-reverse mb-1">
+                                <i class="fa-solid fa-location-dot text-teal-400"></i>
+                                <span>القاهرة، مصر</span>
+                            </p>
+                            <p class="text-gray-400 flex items-center space-x-1.5 space-x-reverse mb-1">
+                                <i class="fa-solid fa-envelope text-teal-400"></i>
+                                <span>support@sukkaricare.com</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-800 pt-3 flex flex-col items-center justify-center space-y-2">
+                        <!-- Social Media Icons -->
+                        <div class="flex space-x-3 space-x-reverse text-sm">
+                            <a href="https://facebook.com" target="_blank" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-teal-600 hover:text-white flex items-center justify-center transition" title="فيسبوك"><i class="fa-brands fa-facebook-f"></i></a>
+                            <a href="https://wa.me/201100181646" target="_blank" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition" title="واتساب المبرمج"><i class="fa-brands fa-whatsapp"></i></a>
+                            <a href="https://github.com/salem438" target="_blank" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-teal-600 hover:text-white flex items-center justify-center transition" title="جيت هب"><i class="fa-brands fa-github"></i></a>
+                            <a href="https://linkedin.com" target="_blank" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-teal-600 hover:text-white flex items-center justify-center transition" title="لينكد إن"><i class="fa-brands fa-linkedin-in"></i></a>
+                        </div>
+                        <div class="text-[10px] text-gray-500 text-center space-y-1">
+                            <p>جميع الحقوق محفوظة © 2026 - مشروع تخرج <strong>سُكّري كير</strong></p>
+                            <p class="text-teal-400 font-bold">
+                                برمجة وتطوير: محمد سالم 
+                                <a href="https://wa.me/201100181646" target="_blank" class="text-emerald-400 hover:underline inline-flex items-center space-x-1 space-x-reverse mr-1 font-normal">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                    <span dir="ltr">01100181646</span>
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+
+            <!-- TAB 2: EDUCATION / التثقيف -->
+            <div id="content-education" class="space-y-4 tab-content hidden">
+                <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+                    <h3 class="font-bold text-base mb-1">موسوعة التثقيف الصحي</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">كل ما يحتاجه مريض السكر للتعايش الآمن والتحكم الكامل.</p>
+                    
+                    <!-- Search input -->
+                    <div class="relative mb-4">
+                        <i class="fa-solid fa-search absolute right-3 top-3 text-gray-400 text-xs"></i>
+                        <input type="text" id="eduSearch" oninput="filterEducation()" placeholder="ابحث في المقالات (مثل: هبوط، أكل، رياضة)..." class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pr-9 pl-3 py-2 text-xs focus:outline-none focus:border-teal-600">
+                    </div>
+
+                    <!-- Articles List -->
+                    <div id="articlesList" class="space-y-3">
+                        <!-- Articles populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: SUGAR / السكر -->
+            <div id="content-sugar" class="space-y-4 tab-content hidden">
+                <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-base">تسجيل قراءة سكر جديدة</h3>
+                        <span class="text-xs text-gray-400" id="currentDateDisplay"></span>
+                    </div>
+
+                    <form id="sugarForm" onsubmit="handleSugarSubmit(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">اسم المريض</label>
+                            <input type="text" id="sugarPatientName" required placeholder="اسم المريض" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-teal-600 font-bold">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">قيمة السكر (mg/dL)</label>
+                            <input type="number" id="sugarVal" required placeholder="مثال: 145" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-teal-600 font-bold">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">نوع القياس</label>
+                                <select id="sugarType" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-600">
+                                    <option value="صائم">صائم (Fastings)</option>
+                                    <option value="فاطر">فاطر بعد الأكل (Postprandial)</option>
+                                    <option value="عشوائي">عشوائي (Random)</option>
+                                    <option value="قبل الأكل">قبل الأكل</option>
+                                    <option value="بعد الأكل">بعد الأكل</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">التوقيت</label>
+                                <input type="time" id="sugarTime" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-600">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">ملاحظة أو أعراض (اختياري)</label>
+                            <input type="text" id="sugarNote" placeholder="مثل: شعور بدوخة خفيفة، أو بعد وجبة دسمة..." class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-600">
+                        </div>
+
+                        <button type="submit" id="sugarSubmitBtn" class="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-xl font-bold text-xs shadow transition cursor-pointer">حفظ القياس ومشاركته مع الطبيب</button>
+                    </form>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+                    <h4 class="font-bold text-sm mb-3">منحنى تغير السكر</h4>
+                    <div class="h-48 relative">
+                        <canvas id="sugarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: MEALS / الأكل والوجبات -->
+            <div id="content-meals" class="space-y-4 tab-content hidden">
+                <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-4">
+                    <h3 class="font-bold text-base">تسجيل الوجبة وكمية الأكل</h3>
+                    <form id="mealForm" onsubmit="handleMealSubmit(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">اسم المريض</label>
+                            <input type="text" id="mealPatientName" required placeholder="اسم المريض" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-teal-600 font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">اسم الوجبة</label>
+                            <input type="text" id="mealName" required placeholder="مثال: فطار (فول وطعمية ونصف رغيف)" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-teal-600">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">الكمية بالتفصيل</label>
+                            <input type="text" id="mealQuantity" required placeholder="مثل: نصف رغيف بلدي، طبق أرز متوسط..." class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-teal-600">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">السكر قبل الأكل (اختياري)</label>
+                                <input type="number" id="mealSugarBefore" placeholder="مثال: 110" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">السكر بعد بساعتين</label>
+                                <input type="number" id="mealSugarAfter" placeholder="مثال: 160" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-xl font-bold text-xs shadow transition cursor-pointer">حفظ الوجبة في السجل السحابي</button>
+                    </form>
+                </div>
+
+                <!-- Meals History -->
+                <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
+                    <h4 class="font-bold text-sm">سجل الوجبات السابق (مباشر)</h4>
+                    <div id="mealsHistoryList" class="space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: MEDICINES / الأدوية -->
+            <div id="content-medicines" class="space-y-4 tab-content hidden">
+                <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-4">
+                    <h3 class="font-bold text-base">جدول الأدوية والأنسولين</h3>
+                    <form onsubmit="handleMedSubmit(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">اسم الدواء أو الأنسولين</label>
+                            <input type="text" id="medName" required placeholder="مثال: جلوكوفاج 1000mg أو أنسولين لانتوس" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-teal-600">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">الجرعة</label>
+                                <input type="text" id="medDose" required placeholder="مثال: قرص واحد / 12 وحدة" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">الموعد</label>
+                                <input type="text" id="medTime" required placeholder="مثال: بعد الفطار مباشرة" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-xl font-bold text-xs shadow transition cursor-pointer">إضافة الدواء للجدول</button>
+                    </form>
+                </div>
+
+                <!-- Medicines List -->
+                <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
+                    <h4 class="font-bold text-sm">أدويتك اليومية</h4>
+                    <div id="medsList" class="space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: DOCTOR & ADMIN DASHBOARD / الطبيب ولوحة الإدارة -->
+            <div id="content-doctor" class="space-y-4 tab-content hidden">
+                <div class="bg-gradient-to-r from-teal-900 to-teal-800 text-white p-4 rounded-2xl shadow-md space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="bg-teal-700 text-teal-200 text-xs px-2.5 py-1 rounded-lg font-semibold">لوحة إدارة العيادة والطبيب</span>
+                        <span class="text-xs font-mono bg-white/10 px-2 py-0.5 rounded">كود العيادة: SC-8492</span>
+                    </div>
+                    <h3 class="font-bold text-base" id="doctorCardTitle">إدارة تقارير المرضى - د. أحمد الشناوي</h3>
+                    <p class="text-xs text-teal-100 opacity-90">تُحدَّث هذه اللوحة لحظياً عبر السحابة؛ أي قراءة يسجلها أي مريض من هاتفه تظهر هنا فوراً.</p>
+                </div>
+
+                <!-- Admin Stats Grid -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white dark:bg-gray-900 p-3.5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm text-center">
+                        <span class="text-xs text-gray-400 block">إجمالي القراءات السحابية</span>
+                        <h4 class="font-black text-xl text-teal-600 mt-1" id="adminTotalReadings">0</h4>
+                    </div>
+                    <div class="bg-white dark:bg-gray-900 p-3.5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm text-center">
+                        <span class="text-xs text-gray-400 block">مرضى تحت المتابعة</span>
+                        <h4 class="font-black text-xl text-teal-600 mt-1" id="adminTotalPatients">1</h4>
+                    </div>
+                </div>
+
+                <!-- Patients Reports Table Card -->
+                <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-sm flex items-center space-x-2 space-x-reverse">
+                            <i class="fa-solid fa-users-medical text-teal-600"></i>
+                            <span>سجل قراءات جميع المرضى</span>
+                        </h4>
+                        <button onclick="generatePdfReport()" class="bg-teal-50 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-teal-100 transition cursor-pointer">
+                            <i class="fa-solid fa-file-pdf"></i> تصدير تقرير شامل
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-right text-xs">
+                            <thead>
+                                <tr class="border-b border-gray-100 dark:border-gray-800 text-gray-400">
+                                    <th class="py-2 px-2">المريض</th>
+                                    <th class="py-2 px-2">القيمة</th>
+                                    <th class="py-2 px-2">النوع</th>
+                                    <th class="py-2 px-2">التوقيت</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminPatientsTableBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Chat / Notes with Doctor -->
+                <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
+                    <h4 class="font-bold text-sm flex items-center space-x-2 space-x-reverse">
+                        <i class="fa-solid fa-comments text-teal-600"></i>
+                        <span>الاستشارات والملاحظات الطبية المباشرة</span>
+                    </h4>
+                    <div id="doctorChatBox" class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl h-40 overflow-y-auto space-y-2 text-xs">
+                        <!-- Populated chat messages -->
+                    </div>
+                    <div class="flex space-x-2 space-x-reverse">
+                        <input type="text" id="chatInputMsg" placeholder="اكتب استشارتك أو ملاحظتك للطبيب هنا..." class="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-600">
+                        <button onclick="sendDoctorMsg()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer">إرسال</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-w-md mx-auto z-40 shadow-lg">
+        <div class="grid grid-cols-6 py-2 px-1 text-center">
+            <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center justify-center space-y-1 text-teal-600 dark:text-teal-400 cursor-pointer">
+                <i class="fa-solid fa-house text-sm"></i>
+                <span class="text-[10px] font-bold">الرئيسية</span>
+            </button>
+            <button onclick="switchTab('education')" id="nav-education" class="flex flex-col items-center justify-center space-y-1 text-gray-400 hover:text-teal-600 cursor-pointer">
+                <i class="fa-solid fa-book-medical text-sm"></i>
+                <span class="text-[10px] font-semibold">التثقيف</span>
+            </button>
+            <button onclick="switchTab('sugar')" id="nav-sugar" class="flex flex-col items-center justify-center space-y-1 text-gray-400 hover:text-teal-600 cursor-pointer">
+                <i class="fa-solid fa-droplet text-sm"></i>
+                <span class="text-[10px] font-semibold">السكر</span>
+            </button>
+            <button onclick="switchTab('meals')" id="nav-meals" class="flex flex-col items-center justify-center space-y-1 text-gray-400 hover:text-teal-600 cursor-pointer">
+                <i class="fa-solid fa-utensils text-sm"></i>
+                <span class="text-[10px] font-semibold">الوجبات</span>
+            </button>
+            <button onclick="switchTab('medicines')" id="nav-medicines" class="flex flex-col items-center justify-center space-y-1 text-gray-400 hover:text-teal-600 cursor-pointer">
+                <i class="fa-solid fa-pills text-sm"></i>
+                <span class="text-[10px] font-semibold">الأدوية</span>
+            </button>
+            <button onclick="switchTab('doctor')" id="nav-doctor" class="flex flex-col items-center justify-center space-y-1 text-gray-400 hover:text-teal-600 cursor-pointer">
+                <i class="fa-solid fa-user-doctor text-sm"></i>
+                <span class="text-[10px] font-semibold">لوحة الطبيب</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- SOS Modal -->
+    <div id="sosModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-gray-900 w-full max-w-sm rounded-3xl p-5 shadow-2xl border-2 border-rose-500 space-y-4">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 class="font-black text-lg text-rose-600">طوارئ السكري (SOS)</h3>
+                <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">إذا كان السكر أقل من 70 (هبوط) أو أعلى من 250 (ارتفاع حاد), اتبع الإرشادات الفورية أدناه:</p>
+            </div>
+
+            <div class="bg-rose-50 dark:bg-rose-950/40 p-3.5 rounded-2xl border border-rose-200 dark:border-rose-900 text-xs space-y-2 text-rose-900 dark:text-rose-200 font-semibold">
+                <p>🔹 <strong>في حالة الهبوط الحاد:</strong> تناول 3 حبات سكر أو نصف كوب عصير محلى، وانتظر 15 دقيقة وأعد القياس.</p>
+                <p>🔹 <strong>في حالة الارتفاع الحاد:</strong> اشرب ماء وفير، وتواصل مع الطبيب المعالج فوراً.</p>
+            </div>
+
+            <div class="space-y-2">
+                <a href="tel:123" class="w-full bg-rose-600 hover:bg-rose-700 text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 space-x-reverse shadow-md transition">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>اتصال عاجل بالإسعاف (123)</span>
+                </a>
+                <a id="sosDoctorPhone" href="tel:01000000000" class="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center space-x-2 space-x-reverse shadow-md transition">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span id="sosDoctorPhoneText">اتصال بطبيب العيادة</span>
+                </a>
+                <button onclick="closeSosModal()" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-2.5 rounded-xl font-bold text-xs hover:bg-gray-200 transition cursor-pointer">إغلاق النافذة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-gray-900 w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
+                <h3 class="font-bold text-base">إعدادات الملف الشخصي</h3>
+                <button onclick="closeSettingsModal()" class="text-gray-400 hover:text-gray-600 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form onsubmit="saveSettings(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold mb-1">اسم المريض</label>
+                    <input type="text" id="setPatientName" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold mb-1">السن</label>
+                        <input type="number" id="setPatientAge" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">نوع السكري</label>
+                        <select id="setDiabetesType" class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5">
+                            <option value="النوع الأول">النوع الأول</option>
+                            <option value="النوع الثاني">النوع الثاني</option>
+                            <option value="سكر حمل">سكر حمل</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">اسم الطبيب المعالج / العيادة</label>
+                    <input type="text" id="setDoctorName" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5">
+                </div>
+                <div>
+                    <label class="block font-bold mb-1">رقم هاتف الطبيب / الطوارئ</label>
+                    <input type="text" id="setDoctorPhone" required class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5">
+                </div>
+                <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-xl font-bold transition cursor-pointer">حفظ التغييرات</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FIREBASE CLOUD REAL-TIME MODULE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDCmT1ZCVLhaX7GEibSy44umpMuPNyo0a0",
+            authDomain: "sukkari-care.firebaseapp.com",
+            projectId: "sukkari-care",
+            storageBucket: "sukkari-care.firebasestorage.app",
+            messagingSenderId: "522660870066",
+            appId: "1:522660870066:web:a8ab9be7127b34289b96ab",
+            measurementId: "G-TRYC78J5MK"
+        };
+
+        // Initialize Firebase & Firestore
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Expose Firestore helpers globally to standard scripts
+        window.fbDB = {
+            db,
+            collection,
+            addDoc,
+            serverTimestamp,
+            isConnected: false
+        };
+
+        const badge = document.getElementById('cloudStatusBadge');
+        function setConnectedUI(connected) {
+            window.fbDB.isConnected = connected;
+            if (!badge) return;
+            if (connected) {
+                badge.className = "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-200 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1";
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> متصل سحابياً`;
+            } else {
+                badge.className = "bg-rose-100 text-rose-800 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1";
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> وضع محلي`;
+            }
+        }
+
+        // 1. Real-Time Listener for Sugar Readings
+        const sugarQ = query(collection(db, "sugar_readings"), orderBy("createdAt", "asc"));
+        onSnapshot(sugarQ, (snapshot) => {
+            setConnectedUI(true);
+            const cloudReadings = [];
+            snapshot.forEach((doc) => {
+                cloudReadings.push({ id: doc.id, ...doc.data() });
+            });
+            if (cloudReadings.length > 0) {
+                window.appState.sugarReadings = cloudReadings;
+                window.saveState();
+                window.renderAll();
+                window.updateChart();
+            }
+        }, (err) => {
+            console.warn("Firestore Sugar Listener:", err);
+            setConnectedUI(false);
+        });
+
+        // 2. Real-Time Listener for Meals
+        const mealsQ = query(collection(db, "meals"), orderBy("createdAt", "asc"));
+        onSnapshot(mealsQ, (snapshot) => {
+            const cloudMeals = [];
+            snapshot.forEach((doc) => {
+                cloudMeals.push({ id: doc.id, ...doc.data() });
+            });
+            if (cloudMeals.length > 0) {
+                window.appState.meals = cloudMeals;
+                window.saveState();
+                window.renderAll();
+            }
+        });
+
+        // 3. Real-Time Listener for Medicines
+        const medsQ = query(collection(db, "medicines"), orderBy("createdAt", "asc"));
+        onSnapshot(medsQ, (snapshot) => {
+            const cloudMeds = [];
+            snapshot.forEach((doc) => {
+                cloudMeds.push({ id: doc.id, ...doc.data() });
+            });
+            if (cloudMeds.length > 0) {
+                window.appState.medicines = cloudMeds;
+                window.saveState();
+                window.renderAll();
+            }
+        });
+
+        // 4. Real-Time Listener for Doctor Chat
+        const chatQ = query(collection(db, "doctor_chat"), orderBy("createdAt", "asc"));
+        onSnapshot(chatQ, (snapshot) => {
+            const cloudChat = [];
+            snapshot.forEach((doc) => {
+                cloudChat.push({ id: doc.id, ...doc.data() });
+            });
+            if (cloudChat.length > 0) {
+                window.appState.chatMessages = cloudChat;
+                window.saveState();
+                window.renderAll();
+            }
+        });
+    </script>
+
+    <!-- Main Application Logic -->
+    <script>
+        let splashTimer = null;
+
+        function startSplashSequence() {
+            try {
+                const splash = document.getElementById('splashScreen');
+                const progress = document.getElementById('splashProgress');
+                if(!splash) return;
+
+                splash.style.display = 'flex';
+                splash.style.opacity = '1';
+                splash.style.pointerEvents = 'auto';
+                splash.classList.remove('hidden');
+
+                if(progress) {
+                    progress.style.transition = 'none';
+                    progress.style.width = '0%';
+                    setTimeout(() => {
+                        progress.style.transition = 'width 2500ms linear';
+                        progress.style.width = '100%';
+                    }, 50);
+                }
+
+                clearTimeout(splashTimer);
+                splashTimer = setTimeout(() => {
+                    dismissSplash();
+                }, 2600);
+            } catch (err) {
+                dismissSplash();
+            }
+        }
+
+        function dismissSplash() {
+            clearTimeout(splashTimer);
+            const splash = document.getElementById('splashScreen');
+            if(splash) {
+                splash.style.opacity = '0';
+                splash.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    splash.classList.add('hidden');
+                }, 400);
+            }
+        }
+
+        function showSplashAgain() {
+            startSplashSequence();
+        }
+
+        startSplashSequence();
+
+        window.appState = {
+            patientName: "محمود أحمد",
+            age: 38,
+            diabetesType: "النوع الثاني",
+            doctorName: "د. أحمد الشناوي",
+            doctorPhone: "01012345678",
+            sugarReadings: [
+                { id: 1, patient: "محمود أحمد", val: 142, type: "صائم", time: "08:00 ص", date: "اليوم", note: "طبيعي مستقر" },
+                { id: 2, patient: "محمود أحمد", val: 198, type: "فاطر", time: "02:30 م", date: "اليوم", note: "بعد وجبة غداء دسمة" }
+            ],
+            meals: [
+                { id: 1, patient: "محمود أحمد", name: "إفطار صحي", quantity: "نصف رغيف + فول + بيضة", before: 110, after: 150 }
+            ],
+            medicines: [
+                { id: 1, name: "جلوكوفاج 1000", dose: "قرص واحد", time: "بعد الغداء" },
+                { id: 2, name: "أنسولين لانتوس", dose: "10 وحدات", time: "الساعة 10 مسائاً" }
+            ],
+            chatMessages: [
+                { sender: "doctor", text: "أهلاً بك يا أستاذ محمود. التزم بقياس الصائم بانتظام ولاحظ تأثير وجبة العشاء.", time: "أمس" },
+                { sender: "patient", text: "تمام يا دكتور، هتابع التعليمات بدقة.", time: "اليوم" }
+            ],
+            fontSize: 'normal',
+            darkMode: false
+        };
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('sukkari_care_state');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    window.appState = { ...window.appState, ...parsed };
+                }
+            } catch(e) {}
+        }
+
+        window.saveState = function() {
+            try {
+                localStorage.setItem('sukkari_care_state', JSON.stringify(window.appState));
+            } catch(e) {}
+        };
+
+        loadState();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                window.renderAll();
+                initChart();
+                const dateEl = document.getElementById('currentDateDisplay');
+                if(dateEl) dateEl.innerText = new Date().toLocaleDateString('ar-EG');
+                if(window.appState.darkMode) {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById('content-' + tabId);
+            if(target) target.classList.remove('hidden');
+
+            ['home', 'education', 'sugar', 'meals', 'medicines', 'doctor'].forEach(t => {
+                const btn = document.getElementById('nav-' + t);
+                if(btn) {
+                    if(t === tabId) {
+                        btn.className = "flex flex-col items-center justify-center space-y-1 text-teal-600 dark:text-teal-400 cursor-pointer";
+                    } else {
+                        btn.className = "flex flex-col items-center justify-center space-y-1 text-gray-400 hover:text-teal-600 cursor-pointer";
+                    }
+                }
+            });
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        window.renderAll = function() {
+            const st = window.appState;
+            document.getElementById('headerSubTitle').innerText = `أهلاً، أ. ${st.patientName}`;
+            document.getElementById('doctorCardTitle').innerText = `إدارة تقارير المرضى - ${st.doctorName}`;
+            document.getElementById('sosDoctorPhone').href = `tel:${st.doctorPhone}`;
+            document.getElementById('sosDoctorPhoneText').innerText = `اتصال بطبيب العيادة (${st.doctorName})`;
+
+            document.getElementById('adminTotalReadings').innerText = st.sugarReadings.length;
+            const uniquePatients = [...new Set(st.sugarReadings.map(r => r.patient || st.patientName))];
+            document.getElementById('adminTotalPatients').innerText = uniquePatients.length;
+
+            const adminTableEl = document.getElementById('adminPatientsTableBody');
+            adminTableEl.innerHTML = st.sugarReadings.slice().reverse().map(r => `
+                <tr class="border-b border-gray-100 dark:border-gray-800/60">
+                    <td class="py-2.5 px-2 font-bold">${r.patient || st.patientName}</td>
+                    <td class="py-2.5 px-2"><span class="font-bold ${r.val > 200 ? 'text-rose-600' : 'text-teal-600'}">${r.val}</span> <span class="text-[9px] text-gray-400">mg/dL</span></td>
+                    <td class="py-2.5 px-2">${r.type}</td>
+                    <td class="py-2.5 px-2 text-gray-500">${r.time}</td>
+                </tr>
+            `).join('') || '<tr><td colspan="4" class="text-center py-4 text-gray-400">لا توجد قراءات مسجلة بعد.</td></tr>';
+
+            const latestEl = document.getElementById('latestReadingsList');
+            latestEl.innerHTML = st.sugarReadings.slice(-3).reverse().map(r => `
+                <div class="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-800/60 rounded-xl text-xs">
+                    <div class="flex items-center space-x-2 space-x-reverse">
+                        <span class="w-8 h-8 rounded-lg ${r.val > 200 ? 'bg-rose-100 text-rose-600' : (r.val < 70 ? 'bg-amber-100 text-amber-600' : 'bg-teal-100 text-teal-600')} flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-droplet text-xs"></i>
+                        </span>
+                        <div>
+                            <span class="font-bold">${r.val} <span class="text-[10px] text-gray-400">mg/dL</span> <span class="text-[10px] text-teal-600">(${r.patient || st.patientName})</span></span>
+                            <span class="text-[10px] text-gray-500 block">${r.type} - ${r.time}</span>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded ${r.val > 200 ? 'bg-rose-100 text-rose-700' : 'bg-teal-100 text-teal-700'}">${r.val > 200 ? 'مرتفع' : (r.val < 70 ? 'منخفض' : 'منتظم')}</span>
+                </div>
+            `).join('') || '<p class="text-xs text-gray-400">لا توجد قراءات مسجلة بعد.</p>';
+
+            const mealsEl = document.getElementById('mealsHistoryList');
+            mealsEl.innerHTML = st.meals.slice(-5).reverse().map(m => `
+                <div class="p-2.5 bg-gray-50 dark:bg-gray-800/60 rounded-xl text-xs space-y-1">
+                    <div class="flex justify-between font-bold">
+                        <span>${m.name} <span class="text-teal-600 font-normal">(${m.patient || st.patientName})</span></span>
+                        <span class="text-teal-600">${m.quantity}</span>
+                    </div>
+                    <div class="text-[10px] text-gray-500 flex space-x-3 space-x-reverse">
+                        <span>قبل الأكل: ${m.before || '-'}</span>
+                        <span>بعد بساعتين: ${m.after || '-'}</span>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-xs text-gray-400">لا توجد وجبات مسجلة.</p>';
+
+            const medsEl = document.getElementById('medsList');
+            medsEl.innerHTML = st.medicines.map(med => `
+                <div class="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-800/60 rounded-xl text-xs">
+                    <div>
+                        <h5 class="font-bold">${med.name}</h5>
+                        <p class="text-[10px] text-gray-500">الجرعة: ${med.dose} | الموعد: ${med.time}</p>
+                    </div>
+                    <span class="bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200 px-2.5 py-1 rounded-lg font-bold text-[10px]">نشط</span>
+                </div>
+            `).join('') || '<p class="text-xs text-gray-400">لا توجد أدوية مسجلة.</p>';
+
+            renderArticles(articlesData);
+
+            const chatEl = document.getElementById('doctorChatBox');
+            chatEl.innerHTML = st.chatMessages.map(c => `
+                <div class="flex ${c.sender === 'patient' ? 'justify-start' : 'justify-end'}">
+                    <div class="max-w-[80%] p-2.5 rounded-xl ${c.sender === 'patient' ? 'bg-teal-600 text-white rounded-br-none' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-600 rounded-bl-none'}">
+                        <p class="text-xs">${c.text}</p>
+                        <span class="text-[9px] opacity-70 block mt-1 text-left">${c.time}</span>
+                    </div>
+                </div>
+            `).join('');
+            chatEl.scrollTop = chatEl.scrollHeight;
+        };
+
+        const articlesData = [
+            { id: 1, title: "كيفية التعامل مع الهبوط الحاد (Hypoglycemia)", category: "الطوارئ", desc: "خطوات قاعدة 15-15 الفورية لرفع سكر الدم بأمان وسرعة." },
+            { id: 2, title: "حساب الكربوهيدرات لمرضى السكري", category: "التغذية", desc: "دليلك لمعرفة كميات النشويات في الأكل وتجنب ارتفاع السكر بعد الوجبات." },
+            { id: 3, title: "العناية اليومية بالقدم السكري", category: "الوقاية", desc: "نشرات طبية هامة لتفادي الالتهابات والحفاظ على صحة القدمين." },
+            { id: 4, title: "أهمية الرياضة الخفيفة للمصابين", category: "النشاط", desc: "كيف يساعد المشي المنتظم في تحسين حساسية الأنسولين وضبط السكر." }
+        ];
+
+        function renderArticles(list) {
+            const el = document.getElementById('articlesList');
+            el.innerHTML = list.map(a => `
+                <div class="p-3 bg-gray-50 dark:bg-gray-800/60 rounded-xl space-y-1 border border-gray-100 dark:border-gray-700">
+                    <span class="text-[10px] font-bold bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-200 px-2 py-0.5 rounded">${a.category}</span>
+                    <h5 class="font-bold text-xs mt-1">${a.title}</h5>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400">${a.desc}</p>
+                </div>
+            `).join('');
+        }
+
+        function filterEducation() {
+            const query = document.getElementById('eduSearch').value.toLowerCase();
+            const filtered = articlesData.filter(a => a.title.toLowerCase().includes(query) || a.desc.toLowerCase().includes(query));
+            renderArticles(filtered);
+        }
+
+        async function handleSugarSubmit(e) {
+            e.preventDefault();
+            const patient = document.getElementById('sugarPatientName').value;
+            const val = parseInt(document.getElementById('sugarVal').value);
+            const type = document.getElementById('sugarType').value;
+            const time = document.getElementById('sugarTime').value || new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
+            const note = document.getElementById('sugarNote').value;
+            const dateStr = new Date().toLocaleDateString('ar-EG');
+
+            const newItem = { patient, val, type, time, date: dateStr, note };
+
+            // Push to Firebase Cloud Firestore
+            if (window.fbDB) {
+                try {
+                    await window.fbDB.addDoc(window.fbDB.collection(window.fbDB.db, "sugar_readings"), {
+                        ...newItem,
+                        createdAt: window.fbDB.serverTimestamp()
+                    });
+                } catch (err) {
+                    console.error("Cloud save failed, saving locally:", err);
+                    window.appState.sugarReadings.push({ id: Date.now(), ...newItem });
+                    window.saveState();
+                    window.renderAll();
+                    window.updateChart();
+                }
+            } else {
+                window.appState.sugarReadings.push({ id: Date.now(), ...newItem });
+                window.saveState();
+                window.renderAll();
+                window.updateChart();
+            }
+
+            document.getElementById('sugarForm').reset();
+
+            if (val > 250 || val < 70) {
+                openSosModal();
+            } else {
+                alert("تم تسجيل قراءة السكر ومزامنتها سحابياً بنجاح!");
+            }
+        }
+
+        async function handleMealSubmit(e) {
+            e.preventDefault();
+            const patient = document.getElementById('mealPatientName').value;
+            const name = document.getElementById('mealName').value;
+            const quantity = document.getElementById('mealQuantity').value;
+            const before = document.getElementById('mealSugarBefore').value;
+            const after = document.getElementById('mealSugarAfter').value;
+
+            const newMeal = { patient, name, quantity, before, after };
+
+            if (window.fbDB) {
+                try {
+                    await window.fbDB.addDoc(window.fbDB.collection(window.fbDB.db, "meals"), {
+                        ...newMeal,
+                        createdAt: window.fbDB.serverTimestamp()
+                    });
+                } catch (err) {
+                    window.appState.meals.push({ id: Date.now(), ...newMeal });
+                    window.saveState();
+                    window.renderAll();
+                }
+            } else {
+                window.appState.meals.push({ id: Date.now(), ...newMeal });
+                window.saveState();
+                window.renderAll();
+            }
+
+            document.getElementById('mealForm').reset();
+            alert("تم تسجيل الوجبة ومشاركتها في السجل السحابي بنجاح.");
+        }
+
+        async function handleMedSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('medName').value;
+            const dose = document.getElementById('medDose').value;
+            const time = document.getElementById('medTime').value;
+
+            const newMed = { name, dose, time };
+
+            if (window.fbDB) {
+                try {
+                    await window.fbDB.addDoc(window.fbDB.collection(window.fbDB.db, "medicines"), {
+                        ...newMed,
+                        createdAt: window.fbDB.serverTimestamp()
+                    });
+                } catch (err) {
+                    window.appState.medicines.push({ id: Date.now(), ...newMed });
+                    window.saveState();
+                    window.renderAll();
+                }
+            } else {
+                window.appState.medicines.push({ id: Date.now(), ...newMed });
+                window.saveState();
+                window.renderAll();
+            }
+
+            e.target.reset();
+            alert("تم إضافة الدواء لجدول المتابعة السحابي.");
+        }
+
+        async function sendDoctorMsg() {
+            const input = document.getElementById('chatInputMsg');
+            if(!input.value.trim()) return;
+
+            const msgText = input.value;
+            const timeNow = new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
+            input.value = '';
+
+            if (window.fbDB) {
+                try {
+                    await window.fbDB.addDoc(window.fbDB.collection(window.fbDB.db, "doctor_chat"), {
+                        sender: 'patient',
+                        text: msgText,
+                        time: timeNow,
+                        createdAt: window.fbDB.serverTimestamp()
+                    });
+                } catch (err) {
+                    window.appState.chatMessages.push({ sender: 'patient', text: msgText, time: timeNow });
+                    window.saveState();
+                    window.renderAll();
+                }
+            } else {
+                window.appState.chatMessages.push({ sender: 'patient', text: msgText, time: timeNow });
+                window.saveState();
+                window.renderAll();
+            }
+        }
+
+        let sugarChartInstance = null;
+        function initChart() {
+            try {
+                if (typeof Chart === 'undefined') return;
+                const canvas = document.getElementById('sugarChart');
+                if(!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const labels = window.appState.sugarReadings.map(r => r.time);
+                const dataVals = window.appState.sugarReadings.map(r => r.val);
+
+                sugarChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'مستوى السكر (mg/dL)',
+                            data: dataVals,
+                            borderColor: '#0d9488',
+                            backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: false, suggestedMin: 60, suggestedMax: 300 }
+                        }
+                    }
+                });
+            } catch(e) {}
+        }
+
+        window.updateChart = function() {
+            if(!sugarChartInstance) return;
+            sugarChartInstance.data.labels = window.appState.sugarReadings.map(r => r.time);
+            sugarChartInstance.data.datasets[0].data = window.appState.sugarReadings.map(r => r.val);
+            sugarChartInstance.update();
+        };
+
+        function generatePdfReport() {
+            const st = window.appState;
+            const win = window.open('', '_blank');
+            win.document.write(`
+                <html lang="ar" dir="rtl">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>تقرير عيادة السكري الشامل - ${st.doctorName}</title>
+                    <style>
+                        body { font-family: 'Cairo', Tahoma, sans-serif; padding: 30px; color: #333; }
+                        h1, h2 { color: #0d9488; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                        th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: right; font-size: 14px; }
+                        th { background-color: #0d9488; color: white; }
+                        .header { border-bottom: 2px solid #0d9488; padding-bottom: 10px; margin-bottom: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>تقرير لوحة إدارة العيادة والتقارير الطبية (سُكّري كير)</h1>
+                        <p><strong>الطبيب المشرف:</strong> ${st.doctorName} | <strong>تاريخ الإصدار:</strong> ${new Date().toLocaleDateString('ar-EG')}</p>
+                    </div>
+
+                    <h2>سجل قراءات جميع المرضى المسجلين</h2>
+                    <table>
+                        <tr>
+                            <th>التاريخ / الوقت</th>
+                            <th>اسم المريض</th>
+                            <th>نوع القياس</th>
+                            <th>القيمة (mg/dL)</th>
+                            <th>الملاحظات</th>
+                        </tr>
+                        ${st.sugarReadings.map(r => `
+                            <tr>
+                                <td>${r.date} - ${r.time}</td>
+                                <td><b>${r.patient || st.patientName}</b></td>
+                                <td>${r.type}</td>
+                                <td><b>${r.val}</b></td>
+                                <td>${r.note || '-'}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+
+                    <h2 style="margin-top: 30px;">سجل الوجبات والأكل للمرضى</h2>
+                    <table>
+                        <tr>
+                            <th>اسم المريض</th>
+                            <th>الوجبة</th>
+                            <th>الكمية</th>
+                            <th>قبل الأكل</th>
+                            <th>بعد بساعتين</th>
+                        </tr>
+                        ${st.meals.map(m => `
+                            <tr>
+                                <td><b>${m.patient || st.patientName}</b></td>
+                                <td>${m.name}</td>
+                                <td>${m.quantity}</td>
+                                <td>${m.before || '-'}</td>
+                                <td>${m.after || '-'}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+
+                    <div style="margin-top: 40px; text-align: center;">
+                        <button onclick="window.print()" style="background: #0d9488; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 8px; cursor: pointer;">طباعة التقرير</button>
+                    </div>
+                </body>
+                </html>
+            `);
+            win.document.close();
+        }
+
+        function openSosModal() {
+            const modal = document.getElementById('sosModal');
+            if(modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeSosModal() {
+            const modal = document.getElementById('sosModal');
+            if(modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }
+
+        function openSettingsModal() {
+            const st = window.appState;
+            document.getElementById('setPatientName').value = st.patientName;
+            document.getElementById('setPatientAge').value = st.age;
+            document.getElementById('setDiabetesType').value = st.diabetesType;
+            document.getElementById('setDoctorName').value = st.doctorName;
+            document.getElementById('setDoctorPhone').value = st.doctorPhone;
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+        function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+
+        function saveSettings(e) {
+            e.preventDefault();
+            window.appState.patientName = document.getElementById('setPatientName').value;
+            window.appState.age = document.getElementById('setPatientAge').value;
+            window.appState.diabetesType = document.getElementById('setDiabetesType'.value);
+            window.appState.doctorName = document.getElementById('setDoctorName').value;
+            window.appState.doctorPhone = document.getElementById('setDoctorPhone').value;
+            window.saveState();
+            window.renderAll();
+            closeSettingsModal();
+            alert("تم حفظ إعدادات الملف الشخصي بنجاح.");
+        }
+
+        function toggleDarkMode() {
+            window.appState.darkMode = !window.appState.darkMode;
+            document.documentElement.classList.toggle('dark', window.appState.darkMode);
+            window.saveState();
+        }
+
+        function changeFontSize(dir) {
+            const body = document.getElementById('appBody');
+            if(dir === 'lg') {
+                body.style.fontSize = '1.1rem';
+            } else {
+                body.style.fontSize = '0.9rem';
+            }
+        }
+
+        function installPwa() {
+            alert("لتثبيت التطبيق على هاتفك، اضغط على خيارات المتصفح (المتصفح 3 نقاط فوق) واختار 'إضافة إلى الشاشة الرئيسية' أو 'Install App'.");
+            document.getElementById('pwaBanner').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
