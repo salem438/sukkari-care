@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d9488">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2966/2966327.png">
     <title>سُكّري كير - متابعة السكري والتثقيف الصحي</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -1226,9 +1229,38 @@
             }
         }
 
-        function installPwa() {
-            alert("لتثبيت التطبيق على هاتفك، اضغط على خيارات المتصفح (المتصفح 3 نقاط فوق) واختار 'إضافة إلى الشاشة الرئيسية' أو 'Install App'.");
-            document.getElementById('pwaBanner').style.display = 'none';
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Error:', err));
+            });
+        }
+
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const banner = document.getElementById('pwaBanner');
+            if (banner) banner.style.display = 'flex';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            const banner = document.getElementById('pwaBanner');
+            if (banner) banner.style.display = 'none';
+        });
+
+        async function installPwa() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('pwaBanner').style.display = 'none';
+                }
+                deferredPrompt = null;
+            } else {
+                alert("لتثبيت التطبيق على هاتفك، اضغط على خيارات المتصفح (3 نقاط بالأعلى) واختر 'تثبيت التطبيق' أو 'إضافة إلى الشاشة الرئيسية'.");
+            }
         }
     </script>
 </body>
