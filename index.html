@@ -43,7 +43,6 @@
 
     <!-- SPLASH SCREEN / الشاشة الترحيبية -->
     <div id="splashScreen" class="fixed inset-0 z-[100] bg-gradient-to-br from-teal-700 via-teal-800 to-teal-950 text-white flex flex-col items-center justify-between p-6 text-center transition-all duration-500">
-        <!-- Top Badge -->
         <div class="w-full max-w-md flex justify-between items-center pt-2">
             <span class="bg-white/10 backdrop-blur-md text-teal-100 text-xs px-3 py-1 rounded-full font-semibold border border-white/10">
                 <i class="fa-solid fa-graduation-cap ml-1"></i> مشروع تخرج متكامل
@@ -51,9 +50,7 @@
             <span class="text-xs text-teal-200 font-mono">v3.0 Cloud Live</span>
         </div>
 
-        <!-- Center Content -->
         <div class="max-w-sm space-y-5 my-auto">
-            <!-- Animated Logo -->
             <div class="relative mx-auto w-24 h-24">
                 <div class="absolute inset-0 bg-teal-400 rounded-3xl blur-xl opacity-30 animate-pulse"></div>
                 <div class="relative w-24 h-24 rounded-3xl bg-white text-teal-700 flex items-center justify-center text-5xl shadow-2xl animate-pulse-slow">
@@ -61,7 +58,6 @@
                 </div>
             </div>
 
-            <!-- Title & Description -->
             <div class="space-y-2">
                 <h1 class="text-3xl font-black tracking-tight">سُكّري كير</h1>
                 <p class="text-teal-200 font-bold text-sm">رفيقك الذكي لمتابعة السكري والتثقيف الصحي</p>
@@ -70,7 +66,6 @@
                 </p>
             </div>
 
-            <!-- Quick Feature Pills -->
             <div class="grid grid-cols-3 gap-2 pt-2 text-[11px] font-semibold">
                 <div class="bg-white/10 backdrop-blur-sm p-2.5 rounded-2xl border border-white/10 flex flex-col items-center space-y-1">
                     <i class="fa-solid fa-cloud-arrow-up text-teal-300 text-base"></i>
@@ -87,7 +82,6 @@
             </div>
         </div>
 
-        <!-- Bottom Action & Auto-Timer -->
         <div class="w-full max-w-sm space-y-3 pb-4">
             <button type="button" onclick="dismissSplash()" class="w-full bg-white text-teal-900 hover:bg-teal-50 font-black text-sm py-3.5 rounded-2xl shadow-xl transition transform active:scale-95 flex items-center justify-center space-x-2 space-x-reverse cursor-pointer">
                 <span>ابدأ المتابعة الآن</span>
@@ -120,19 +114,16 @@
             </div>
 
             <div class="flex items-center space-x-2 space-x-reverse">
-                <!-- SOS Button Fixed -->
                 <button onclick="openSosModal()" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 space-x-reverse shadow-md animate-pulse cursor-pointer">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     <span>SOS</span>
                 </button>
-                <!-- Settings Button -->
                 <button onclick="openSettingsModal()" class="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition cursor-pointer">
                     <i class="fa-solid fa-user-cog"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Secondary Toolbar: Font Size & Dark Mode & PDF -->
         <div class="bg-gray-100 dark:bg-gray-800/50 px-4 py-2 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between text-xs">
             <div class="flex items-center space-x-2 space-x-reverse">
                 <span class="text-gray-500 dark:text-gray-400">حجم الخط:</span>
@@ -179,12 +170,10 @@
             <span class="bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 font-extrabold text-sm px-3 py-1 rounded-xl">5 أيام</span>
         </div>
 
-        <!-- Tabs Navigation Content Wrapper -->
         <div id="tabContents">
 
-            <!-- TAB 1: HOME / الرئيسية -->
+            <!-- TAB 1: HOME -->
             <div id="content-home" class="space-y-4 tab-content">
-                <!-- Quick Actions Grid -->
                 <div class="grid grid-cols-3 gap-3">
                     <button onclick="switchTab('sugar')" class="bg-teal-700 hover:bg-teal-800 text-white p-3 rounded-2xl text-center shadow-md flex flex-col items-center justify-center space-y-1.5 transition cursor-pointer">
                         <i class="fa-solid fa-droplet text-lg"></i>
@@ -200,7 +189,6 @@
                     </button>
                 </div>
 
-                <!-- Featured Education Card -->
                 <div class="bg-gradient-to-br from-teal-800 to-teal-950 text-white p-5 rounded-3xl shadow-lg relative overflow-hidden">
                     <div class="absolute -left-4 -bottom-4 opacity-10 text-8xl">
                         <i class="fa-solid fa-book-medical"></i>
@@ -211,7 +199,6 @@
                     <button onclick="switchTab('education')" class="mt-4 bg-white text-teal-900 text-xs font-bold px-4 py-2 rounded-xl shadow hover:bg-teal-50 transition cursor-pointer">اقرأ الدليل الآن</button>
                 </div>
 
-                <!-- Latest Readings Preview -->
                 <div class="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-2xl shadow-sm space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="font-bold text-sm flex items-center space-x-2 space-x-reverse">
@@ -220,12 +207,9 @@
                         </h4>
                         <button onclick="switchTab('sugar')" class="text-xs text-teal-600 font-bold hover:underline cursor-pointer">عرض الكل</button>
                     </div>
-                    <div id="latestReadingsList" class="space-y-2">
-                        <!-- Populated by JS -->
-                    </div>
+                    <div id="latestReadingsList" class="space-y-2"></div>
                 </div>
 
-                <!-- PROFESSIONAL FOOTER / قسم الفوتر الاحترافي -->
                 <footer class="bg-gray-900 text-gray-300 rounded-3xl p-5 space-y-4 shadow-lg border border-gray-800 text-xs mt-8">
                     <div class="flex items-center space-x-3 space-x-reverse border-b border-gray-800 pb-3">
                         <div class="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-base shadow">
@@ -261,7 +245,6 @@
                     </div>
 
                     <div class="border-t border-gray-800 pt-3 flex flex-col items-center justify-center space-y-2">
-                        <!-- Social Media Icons -->
                         <div class="flex space-x-3 space-x-reverse text-sm">
                             <a href="https://facebook.com" target="_blank" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-teal-600 hover:text-white flex items-center justify-center transition" title="فيسبوك"><i class="fa-brands fa-facebook-f"></i></a>
                             <a href="https://wa.me/201100181646" target="_blank" class="w-8 h-8 rounded-full bg-gray-800 hover:bg-emerald-600 hover:text-white flex items-center justify-center transition" title="واتساب المبرمج"><i class="fa-brands fa-whatsapp"></i></a>
@@ -282,26 +265,20 @@
                 </footer>
             </div>
 
-            <!-- TAB 2: EDUCATION / التثقيف -->
+            <!-- TAB 2: EDUCATION -->
             <div id="content-education" class="space-y-4 tab-content hidden">
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
                     <h3 class="font-bold text-base mb-1">موسوعة التثقيف الصحي</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">كل ما يحتاجه مريض السكر للتعايش الآمن والتحكم الكامل.</p>
-                    
-                    <!-- Search input -->
                     <div class="relative mb-4">
                         <i class="fa-solid fa-search absolute right-3 top-3 text-gray-400 text-xs"></i>
                         <input type="text" id="eduSearch" oninput="filterEducation()" placeholder="ابحث في المقالات (مثل: هبوط، أكل، رياضة)..." class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pr-9 pl-3 py-2 text-xs focus:outline-none focus:border-teal-600">
                     </div>
-
-                    <!-- Articles List -->
-                    <div id="articlesList" class="space-y-3">
-                        <!-- Articles populated dynamically -->
-                    </div>
+                    <div id="articlesList" class="space-y-3"></div>
                 </div>
             </div>
 
-            <!-- TAB 3: SUGAR / السكر -->
+            <!-- TAB 3: SUGAR -->
             <div id="content-sugar" class="space-y-4 tab-content hidden">
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-4">
                     <div class="flex items-center justify-between">
@@ -346,7 +323,6 @@
                     </form>
                 </div>
 
-                <!-- Chart Container -->
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
                     <h4 class="font-bold text-sm mb-3">منحنى تغير السكر</h4>
                     <div class="h-48 relative">
@@ -355,7 +331,7 @@
                 </div>
             </div>
 
-            <!-- TAB 4: MEALS / الأكل والوجبات -->
+            <!-- TAB 4: MEALS -->
             <div id="content-meals" class="space-y-4 tab-content hidden">
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-4">
                     <h3 class="font-bold text-base">تسجيل الوجبة وكمية الأكل</h3>
@@ -386,16 +362,13 @@
                     </form>
                 </div>
 
-                <!-- Meals History -->
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
                     <h4 class="font-bold text-sm">سجل الوجبات السابق (مباشر)</h4>
-                    <div id="mealsHistoryList" class="space-y-2">
-                        <!-- Populated by JS -->
-                    </div>
+                    <div id="mealsHistoryList" class="space-y-2"></div>
                 </div>
             </div>
 
-            <!-- TAB 5: MEDICINES / الأدوية -->
+            <!-- TAB 5: MEDICINES -->
             <div id="content-medicines" class="space-y-4 tab-content hidden">
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-4">
                     <h3 class="font-bold text-base">جدول الأدوية والأنسولين</h3>
@@ -418,16 +391,13 @@
                     </form>
                 </div>
 
-                <!-- Medicines List -->
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
                     <h4 class="font-bold text-sm">أدويتك اليومية</h4>
-                    <div id="medsList" class="space-y-2">
-                        <!-- Populated by JS -->
-                    </div>
+                    <div id="medsList" class="space-y-2"></div>
                 </div>
             </div>
 
-            <!-- TAB 6: DOCTOR & ADMIN DASHBOARD / الطبيب ولوحة الإدارة -->
+            <!-- TAB 6: DOCTOR & ADMIN DASHBOARD -->
             <div id="content-doctor" class="space-y-4 tab-content hidden">
                 <div class="bg-gradient-to-r from-teal-900 to-teal-800 text-white p-4 rounded-2xl shadow-md space-y-3">
                     <div class="flex items-center justify-between">
@@ -438,7 +408,6 @@
                     <p class="text-xs text-teal-100 opacity-90">تُحدَّث هذه اللوحة لحظياً عبر السحابة؛ أي قراءة يسجلها أي مريض من هاتفه تظهر هنا فوراً.</p>
                 </div>
 
-                <!-- Admin Stats Grid -->
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-white dark:bg-gray-900 p-3.5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm text-center">
                         <span class="text-xs text-gray-400 block">إجمالي القراءات السحابية</span>
@@ -450,7 +419,6 @@
                     </div>
                 </div>
 
-                <!-- Patients Reports Table Card -->
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="font-bold text-sm flex items-center space-x-2 space-x-reverse">
@@ -472,22 +440,17 @@
                                     <th class="py-2 px-2">التوقيت</th>
                                 </tr>
                             </thead>
-                            <tbody id="adminPatientsTableBody">
-                                <!-- Populated by JS -->
-                            </tbody>
+                            <tbody id="adminPatientsTableBody"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Chat / Notes with Doctor -->
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
                     <h4 class="font-bold text-sm flex items-center space-x-2 space-x-reverse">
                         <i class="fa-solid fa-comments text-teal-600"></i>
                         <span>الاستشارات والملاحظات الطبية المباشرة</span>
                     </h4>
-                    <div id="doctorChatBox" class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl h-40 overflow-y-auto space-y-2 text-xs">
-                        <!-- Populated chat messages -->
-                    </div>
+                    <div id="doctorChatBox" class="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl h-40 overflow-y-auto space-y-2 text-xs"></div>
                     <div class="flex space-x-2 space-x-reverse">
                         <input type="text" id="chatInputMsg" placeholder="اكتب استشارتك أو ملاحظتك للطبيب هنا..." class="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-600">
                         <button onclick="sendDoctorMsg()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer">إرسال</button>
@@ -537,7 +500,7 @@
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
                 <h3 class="font-black text-lg text-rose-600">طوارئ السكري (SOS)</h3>
-                <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">إذا كان السكر أقل من 70 (هبوط) أو أعلى من 250 (ارتفاع حاد), اتبع الإرشادات الفورية أدناه:</p>
+                <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">إذا كان السكر أقل من 70 (هبوط) أو أعلى من 250 (ارتفاع حاد)، اتبع الإرشادات الفورية أدناه:</p>
             </div>
 
             <div class="bg-rose-50 dark:bg-rose-950/40 p-3.5 rounded-2xl border border-rose-200 dark:border-rose-900 text-xs space-y-2 text-rose-900 dark:text-rose-200 font-semibold">
@@ -604,7 +567,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDCmT1ZCVLhaX7GEibSy44umpMuPNyo0a0",
             authDomain: "sukkari-care.firebaseapp.com",
@@ -615,11 +577,9 @@
             measurementId: "G-TRYC78J5MK"
         };
 
-        // Initialize Firebase & Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Expose Firestore helpers globally to standard scripts
         window.fbDB = {
             db,
             collection,
@@ -641,7 +601,6 @@
             }
         }
 
-        // 1. Real-Time Listener for Sugar Readings
         const sugarQ = query(collection(db, "sugar_readings"), orderBy("createdAt", "asc"));
         onSnapshot(sugarQ, (snapshot) => {
             setConnectedUI(true);
@@ -660,7 +619,6 @@
             setConnectedUI(false);
         });
 
-        // 2. Real-Time Listener for Meals
         const mealsQ = query(collection(db, "meals"), orderBy("createdAt", "asc"));
         onSnapshot(mealsQ, (snapshot) => {
             const cloudMeals = [];
@@ -674,7 +632,6 @@
             }
         });
 
-        // 3. Real-Time Listener for Medicines
         const medsQ = query(collection(db, "medicines"), orderBy("createdAt", "asc"));
         onSnapshot(medsQ, (snapshot) => {
             const cloudMeds = [];
@@ -688,7 +645,6 @@
             }
         });
 
-        // 4. Real-Time Listener for Doctor Chat
         const chatQ = query(collection(db, "doctor_chat"), orderBy("createdAt", "asc"));
         onSnapshot(chatQ, (snapshot) => {
             const cloudChat = [];
@@ -941,7 +897,6 @@
 
             const newItem = { patient, val, type, time, date: dateStr, note };
 
-            // Push to Firebase Cloud Firestore
             if (window.fbDB) {
                 try {
                     await window.fbDB.addDoc(window.fbDB.collection(window.fbDB.db, "sugar_readings"), {
@@ -1205,7 +1160,7 @@
             e.preventDefault();
             window.appState.patientName = document.getElementById('setPatientName').value;
             window.appState.age = document.getElementById('setPatientAge').value;
-            window.appState.diabetesType = document.getElementById('setDiabetesType'.value);
+            window.appState.diabetesType = document.getElementById('setDiabetesType').value;
             window.appState.doctorName = document.getElementById('setDoctorName').value;
             window.appState.doctorPhone = document.getElementById('setDoctorPhone').value;
             window.saveState();
@@ -1229,7 +1184,6 @@
             }
         }
 
-        // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Error:', err));
